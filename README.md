@@ -161,7 +161,7 @@ const BASE_TOKENS = {
 #### Get Quote
 ```typescript
 const quote = await client.dex.getQuote({
-    chainId: '8453',  // Base Chain
+    chainIndex: '8453',  // Base Chain
     fromTokenAddress: BASE_TOKENS.ETH,
     toTokenAddress: BASE_TOKENS.USDC,
     amount: '1000000000000000000',  // 1 ETH in wei
@@ -177,7 +177,7 @@ console.log(`Price Impact: ${quote.data[0].priceImpactPercentage}%`);
 ```typescript
 // Not needed for native ETH, only for ERC-20 tokens
 const approval = await client.dex.executeApproval({
-    chainId: '8453',
+    chainIndex: '8453',
     tokenContractAddress: BASE_TOKENS.USDC,
     approveAmount: '1000000' // 1 USDC (6 decimals)
 });
@@ -187,7 +187,7 @@ console.log(`Approval tx: ${approval.transactionHash}`);
 #### Execute Swap
 ```typescript
 const swap = await client.dex.executeSwap({
-    chainId: '8453',        // Base Chain
+    chainIndex: '8453',        // Base Chain
     fromTokenAddress: BASE_TOKENS.ETH,
     toTokenAddress: BASE_TOKENS.USDC,
     amount: '100000000000000000', // 0.1 ETH in wei
@@ -215,7 +215,7 @@ const SOLANA_TOKENS = {
 #### Get Quote
 ```typescript
 const quote = await client.dex.getQuote({
-    chainId: '501',         // Solana mainnet
+    chainIndex: '501',         // Solana mainnet
     fromTokenAddress: SOLANA_TOKENS.SOL,
     toTokenAddress: SOLANA_TOKENS.USDC,
     amount: '1000000000',   // 1 SOL (9 decimals)
@@ -229,7 +229,7 @@ console.log(`Price Impact: ${quote.data[0].priceImpactPercentage}%`);
 #### Execute Swap
 ```typescript
 const swap = await client.dex.executeSwap({
-    chainId: '501',
+    chainIndex: '501',
     fromTokenAddress: SOLANA_TOKENS.SOL,
     toTokenAddress: SOLANA_TOKENS.USDC,
     amount: '500000000',    // 0.5 SOL
@@ -256,7 +256,7 @@ const SUI_TOKENS = {
 #### Get Quote
 ```typescript
 const quote = await client.dex.getQuote({
-    chainId: '784',         // Sui mainnet
+    chainIndex: '784',         // Sui mainnet
     fromTokenAddress: SUI_TOKENS.SUI,
     toTokenAddress: SUI_TOKENS.USDC,
     amount: '1000000000',   // 1 SUI (9 decimals)
@@ -267,7 +267,7 @@ const quote = await client.dex.getQuote({
 #### Execute Swap
 ```typescript
 const swap = await client.dex.executeSwap({
-    chainId: '784',
+    chainIndex: '784',
     fromTokenAddress: SUI_TOKENS.SUI,
     toTokenAddress: SUI_TOKENS.USDC,
     amount: '500000000',    // 0.5 SUI
@@ -303,7 +303,7 @@ console.log(`Transaction Hash: ${broadcastResult.data[0].txHash}`);
 #### Gas Limit Estimation
 ```typescript
 const gasLimit = await client.dex.getGasLimit({
-    chainId: '8453',
+    chainIndex: '8453',
     fromAddress: walletAddress,
     toAddress: contractAddress,
     txAmount: '0',
@@ -315,7 +315,7 @@ const gasLimit = await client.dex.getGasLimit({
 ```typescript
 // Requires API registration and whitelist approval
 const simulation = await client.dex.simulateTransaction({
-    chainId: '8453',
+    chainIndex: '8453',
     fromAddress: walletAddress,
     toAddress: contractAddress,
     txAmount: transactionValue,
@@ -367,7 +367,7 @@ console.log(`Router address: ${chainInfo.data[0].dexTokenApproveAddress}`);
 ```typescript
 // Get raw swap transaction data without execution
 const swapData = await client.dex.getSwapData({
-    chainId: '8453',
+    chainIndex: '8453',
     fromTokenAddress: BASE_TOKENS.ETH,
     toTokenAddress: BASE_TOKENS.USDC,
     amount: '1000000000000000000',
@@ -385,7 +385,7 @@ The SDK includes comprehensive error handling with detailed error codes:
 ```typescript
 try {
     const swap = await client.dex.executeSwap({
-        chainId: '8453',
+        chainIndex: '8453',
         fromTokenAddress: BASE_TOKENS.ETH,
         toTokenAddress: BASE_TOKENS.USDC,
         amount: '1000000000000000000',
