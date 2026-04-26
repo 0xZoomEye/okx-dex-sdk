@@ -128,11 +128,20 @@ export class EVMApproveExecutor implements SwapExecutor {
         while (retryCount < (this.networkConfig.maxRetries || 3)) {
             try {
                 console.log("Sending approval transaction...");
-                const tx = await tokenContract.approve(spenderAddress, amount, {
-                    gasLimit: BigInt(100000), // Safe default for approvals
-                    maxFeePerGas: (await this.provider.getFeeData()).maxFeePerGas! * this.DEFAULT_GAS_MULTIPLIER / BigInt(100),
-                    maxPriorityFeePerGas: (await this.provider.getFeeData()).maxPriorityFeePerGas! * this.DEFAULT_GAS_MULTIPLIER / BigInt(100)
-                });
+                const feeData = await this.provider.getFeeData();
+                let tx;
+                if (feeData.maxFeePerGas && feeData.maxPriorityFeePerGas) {
+                    tx = await tokenContract.approve(spenderAddress, amount, {
+                        gasLimit: BigInt(100000), // Safe default for approvals
+                        maxFeePerGas: feeData.maxFeePerGas! * this.DEFAULT_GAS_MULTIPLIER / BigInt(100),
+                        maxPriorityFeePerGas: feeData.maxPriorityFeePerGas! * this.DEFAULT_GAS_MULTIPLIER / BigInt(100)
+                    });
+                } else {
+                    tx = await tokenContract.approve(spenderAddress, amount, {
+                        gasLimit: BigInt(100000), // Safe default for approvals
+                        gasPrice: feeData.gasPrice! * this.DEFAULT_GAS_MULTIPLIER / BigInt(100)
+                    });
+                }
 
                 console.log("Waiting for transaction confirmation...");
                 return await tx.wait();

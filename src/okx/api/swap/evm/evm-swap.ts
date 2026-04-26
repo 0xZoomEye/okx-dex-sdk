@@ -54,26 +54,42 @@ export class EVMSwapExecutor implements SwapExecutor {
                 
                 // Get current gas prices
                 const feeData = await this.provider.getFeeData();
-                const baseFee = feeData.maxFeePerGas || BigInt(0);
-                const priorityFee = feeData.maxPriorityFeePerGas || BigInt(3000000000); // 3 gwei minimum
-                
-                const transaction = {
-                    data: tx.data,
-                    to: tx.to,
-                    value: tx.value || '0',
-                    nonce: nonce + retryCount, // Increment nonce for each retry
-                    gasLimit: BigInt(tx.gas || 0) * gasMultiplier / BigInt(100),
-                    maxFeePerGas: (baseFee * gasMultiplier) / BigInt(100),
-                    maxPriorityFeePerGas: (priorityFee * gasMultiplier) / BigInt(100)
-                };
+
+                let transaction;
+                if (feeData.maxFeePerGas && feeData.maxPriorityFeePerGas) {
+                    const baseFee = feeData.maxFeePerGas || BigInt(0);
+                    const priorityFee = feeData.maxPriorityFeePerGas || BigInt(3000000000); // 3 gwei minimum
+                    
+                    transaction = {
+                        data: tx.data,
+                        to: tx.to,
+                        value: tx.value || '0',
+                        nonce: nonce + retryCount, // Increment nonce for each retry
+                        gasLimit: BigInt(tx.gas || 0) * gasMultiplier / BigInt(100),
+                        maxFeePerGas: (baseFee * gasMultiplier) / BigInt(100),
+                        maxPriorityFeePerGas: (priorityFee * gasMultiplier) / BigInt(100)
+                    };
+                } else {
+                    const gasPrice = feeData.gasPrice;
+
+                    transaction = {
+                        data: tx.data,
+                        to: tx.to,
+                        value: tx.value || '0',
+                        nonce: nonce + retryCount, // Increment nonce for each retry
+                        gasLimit: BigInt(tx.gas || 0) * gasMultiplier / BigInt(100),
+                        gasPrice: (gasPrice! * gasMultiplier) / BigInt(100)
+                    };
+                }
 
                 console.log("Transaction details:", {
                     to: transaction.to,
                     value: transaction.value,
                     nonce: transaction.nonce,
                     gasLimit: transaction.gasLimit.toString(),
-                    maxFeePerGas: transaction.maxFeePerGas.toString(),
-                    maxPriorityFeePerGas: transaction.maxPriorityFeePerGas.toString()
+                    gasPrice: transaction.gasPrice?.toString(),
+                    maxFeePerGas: transaction.maxFeePerGas?.toString(),
+                    maxPriorityFeePerGas: transaction.maxPriorityFeePerGas?.toString()
                 });
 
                 console.log("Sending transaction...");
